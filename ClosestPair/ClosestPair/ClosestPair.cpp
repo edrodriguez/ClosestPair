@@ -73,7 +73,7 @@ double stripClosest(vector<Point> *strip, int size, double d, int *numComparisso
 	// Pick all points one by one and try the next points till the difference
 	// between y coordinates is smaller than d.
 	// This is a proven fact that this loop runs at most 6 times
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i < size - 1; ++i) {
 		for (int j = i + 1; j < size && ((*strip)[j].y - (*strip)[i].y) < min; ++j) {
 			if (distance(&(*strip)[i], &(*strip)[j]) < min)
 				min = distance(&(*strip)[i], &(*strip)[j]);
@@ -93,14 +93,14 @@ double closestUtil(vector<Point> *points, int start, int end, int *numComparisso
 		return bruteForce(points, start, end, numComparissons);
 
 	// Find the middle point
-	int mid = (end - start) / 2;
+	int mid = ((end - start) / 2) + start;
 	Point midPoint = (*points)[mid];
 
 	// Consider the vertical line passing through the middle point
 	// calculate the smallest distance dl on left of middle point and
 	// dr on right side
 	double dl = closestUtil(points, start, mid, numComparissons);
-	double dr = closestUtil(points, start + mid, end - mid, numComparissons);
+	double dr = closestUtil(points, mid + 1, end, numComparissons);
 
 	// Find the smaller of two distances
 	double d = min(dl, dr);
@@ -109,11 +109,12 @@ double closestUtil(vector<Point> *points, int start, int end, int *numComparisso
 	// to the line passing through the middle point
 	vector<Point> strip;
 	int j = 0;
-	for (int i = start; i < end; i++)
+	for (int i = start; i < end; i++) {
 		if (abs((*points)[i].x - midPoint.x) < d) {
 			strip.push_back((*points)[i]);
 			j++;
 		}
+	}
 
 	// Find the closest points in strip.  Return the minimum of d and closest
 	// distance is strip[]
@@ -138,7 +139,8 @@ int main() {
 	int Q1Comparissons, Q2Comparissons, Q3Comparissons, Q4Comparissons,
 		firstHalfComparissons, secondHalfComparissons, totalComparissons;
 
-	inputFile.open("10Points.txt");
+	inputFile.open("Million Points 4 Decimals.txt");
+	//inputFile.open("10Points.txt");
 
 	if (inputFile.good()) {
 		//get length of file
