@@ -6,6 +6,8 @@
 #include <string>
 #include <math.h>
 #include <algorithm>
+#include <string>
+#include <math.h>
 
 using namespace std;
 
@@ -18,7 +20,19 @@ struct PairOfPoints {
 	double distance;
 }; PairOfPoints closestPairs[2];
 
-
+void updateTopTwo(PairOfPoints p) {
+	if (p.distance < closestPairs[0].distance) {
+		closestPairs[1] = closestPairs[0];
+		closestPairs[0] = p;
+	}
+	else if (p.distance < closestPairs[1].distance &&
+		p.PointA.x != closestPairs[0].PointA.x &&
+		p.PointA.y != closestPairs[0].PointA.y &&
+		p.PointB.x != closestPairs[0].PointB.x &&
+		p.PointB.y != closestPairs[0].PointB.y) {
+		closestPairs[1] = p;
+	}
+}
 
 //reads as many lines as indicated and stores the points in the
 //referenced vector
@@ -144,6 +158,7 @@ PairOfPoints closestUtil(vector<Point> *points, int start, int end, int *numComp
 		d = dl;
 	else
 		d = dr;
+	updateTopTwo(d);
 
 	// Build an array strip[] that contains points close (closer than d)
 	// to the line passing through the middle point
@@ -159,8 +174,10 @@ PairOfPoints closestUtil(vector<Point> *points, int start, int end, int *numComp
 	// Find the closest points in strip.  Return the minimum of d and closest
 	// distance is strip[]
 	PairOfPoints s = stripClosest(&strip, j, d.distance, numComparissons);
-	if (s.distance < d.distance)
+	if (s.distance < d.distance) {
 		return s;
+		updateTopTwo(s);
+	}
 	else
 		return d;
 }
@@ -182,8 +199,8 @@ int main() {
 	vector<Point> points;
 	int comparissons;
 
-	//inputFile.open("Million Points 4 Decimals.txt");
-	inputFile.open("10Points.txt");
+	inputFile.open("Million Points 4 Decimals.txt");
+	//inputFile.open("10Points.txt");
 
 	if (inputFile.good()) {
 		//get length of file
@@ -194,7 +211,18 @@ int main() {
 		readFile(inputFile, fileLength, &points);
 		inputFile.close();
 		
-		
+		closestPairs[0].PointA.x = 0;
+		closestPairs[0].PointA.y = 0;
+		closestPairs[0].PointB.x = 0;
+		closestPairs[0].PointB.y = 0;
+		closestPairs[0].distance = DBL_MAX;
+		closestPairs[1].PointA.x = 0;
+		closestPairs[1].PointA.y = 0;
+		closestPairs[1].PointB.x = 0;
+		closestPairs[1].PointB.y = 0;
+		closestPairs[1].distance = DBL_MAX;
+
+
 		time(&startTime);
 		comparissons = 0;
 		closest(&points, &comparissons);
